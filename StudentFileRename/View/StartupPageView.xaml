@@ -1,0 +1,96 @@
+﻿<UserControl x:Class="StudentFileRename.View.StartupPageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" d:DesignWidth="800"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:StudentFileRename.ViewModel"
+             xmlns:utility="clr-namespace:StudentFileRename.Utility"
+             TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+             TextElement.FontWeight="Medium"
+             TextElement.FontSize="15"
+             FontFamily="{materialDesign:MaterialDesignFont}"
+             Background="{DynamicResource MaterialDesignPaper}" d:DataContext="{d:DesignData StartupPageViewModel}">
+    <UserControl.Resources>
+        <utility:BoolToVisibilityConverter
+            x:Key="BoolToHiddenConverter"
+            TrueValue="Visible" FalseValue="Hidden" />
+        <DataTemplate DataType="{x:Type local:InformationalDialogViewModel}">
+            <StackPanel Margin="20" MaxWidth="500" Orientation="Vertical">
+                <TextBlock Text="{Binding Title}" Margin="0,0,0,10" TextWrapping="Wrap"
+                           Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
+                <TextBox Background="Transparent"
+                         BorderThickness="0"
+                         Text="{Binding Message, Mode=OneWay}"
+                         materialDesign:TextFieldAssist.DecorationVisibility="Hidden"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         MaxHeight="500"
+                         TextAlignment="Left"
+                         IsReadOnly="True"
+                         Margin="0,0,0,20"
+                         TextWrapping="Wrap" />
+                <Button Content="OK" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+    <materialDesign:DialogHost
+        Identifier="RootDialog"
+        DialogTheme="Inherit">
+        <Border Padding="10">
+            <StackPanel>
+                <TextBlock Style="{StaticResource MaterialDesignHeadline3TextBlock}"
+                           Text="Student File Rename Application"
+                           Margin="0,0,0,30" HorizontalAlignment="Center" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="60" />
+                        <RowDefinition Height="60" />
+                    </Grid.RowDefinitions>
+                    <Button Grid.Column="0" Grid.Row="0" Margin="20 0 0 0" Width="140" Height="40"
+                            HorizontalAlignment="Left" Command="{Binding OnSelectOriginalFileLocation}">
+                        <TextBlock Text="Select Original File Location" TextWrapping="Wrap" />
+                    </Button>
+                    <TextBox
+                        Grid.Row="0" Grid.Column="1"
+                        VerticalAlignment="Bottom"
+                        Text="{Binding ConversionRequest.OriginalDirectoryLocation, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                        Width="Auto" IsReadOnly="True"
+                        ToolTip="The folder that contains the original files to be converted" Margin="0,0,0,0" />
+                    <Button Grid.Column="0" Grid.Row="1" Margin="20 0 0 0" Width="140" Height="40"
+                            HorizontalAlignment="Left" Command="{Binding OnSelectNewFileLocation}">
+                        <TextBlock Text="Select New Location" TextWrapping="Wrap" />
+                    </Button>
+                    <TextBox
+                        Grid.Row="1" Grid.Column="1"
+                        VerticalAlignment="Bottom"
+                        Text="{Binding ConversionRequest.OutputDirectoryLocation, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                        Width="Auto" IsReadOnly="True" ToolTip="The location to place the new files" Margin="0,0,0,0" />
+                </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Button Grid.Row="0" Grid.Column="0" Width="150" Margin="60"
+                            ToolTip="{Binding ConversionRequest.ErrorMessage}" Command="{Binding OnCreateNewFiles }"
+                            IsEnabled="{Binding ConversionRequest.CanConvert}">
+                        Create New Files
+                    </Button>
+                    <ProgressBar Grid.Column="0" Grid.Row="0"
+                                 Style="{DynamicResource MaterialDesignCircularProgressBar}" IsIndeterminate="True"
+                                 Margin="60"
+                                 Visibility="{Binding Path=IsProcessing, Converter={StaticResource BoolToHiddenConverter}}" />
+
+                </Grid>
+            </StackPanel>
+        </Border>
+    </materialDesign:DialogHost>
+</UserControl>

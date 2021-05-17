@@ -1,20 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
+    <Version>1.0.0</Version>
+    <Author>Kevin Wegman</Author>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-	  <RuntimeIdentifiers>win-x64;</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x64;</RuntimeIdentifiers>
     <UseWPF>true</UseWPF>
     <AssemblyName>StudentFileRename</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Ghostscript" Version="9.2.0" />
+    <PackageReference Include="Ghostscript.NET" Version="1.2.3" />
+    <PackageReference Include="itext7" Version="7.1.15" />
     <PackageReference Include="MaterialDesignThemes" Version="4.0.0-ci2230" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="3.0.1" />
     <PackageReference Include="NLog" Version="4.7.6" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.6.5" />
     <PackageReference Include="PdfPig" Version="0.1.4" />
+    <PackageReference Include="Tesseract" Version="4.1.1" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -35,6 +41,9 @@
 
 	<ItemGroup>
 		<None Update="nlog.config" CopyToOutputDirectory="Always" />
-	</ItemGroup>
+		<None Update="tessdata\eng.traineddata">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+  </ItemGroup>
 
 </Project>

@@ -1,0 +1,33 @@
+name: .NET
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true -o ./publish
+    - name: Create Archive
+      run: powershell Compress-Archive -Path ./publish/* -DestinationPath ./StudentFileRename.zip
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2.2.2
+      with:
+        # A file, directory or wildcard pattern that describes what to upload
+        path: ./StudentFileRename.zip
+      

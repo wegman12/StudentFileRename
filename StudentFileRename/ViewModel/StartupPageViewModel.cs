@@ -1,14 +1,21 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
+using Ghostscript.NET;
 using StudentFileRename.Interface;
 using StudentFileRename.Model;
 using StudentFileRename.Utility;
+using Ghostscript.NET.Rasterizer;
+using Ghostscript.NET.Viewer;
+using iText.Forms.Xfdf;
+using Tesseract;
 using UglyToad.PdfPig;
+using ImageFormat = System.Drawing.Imaging.ImageFormat;
 
 namespace StudentFileRename.ViewModel
 {
@@ -49,6 +56,7 @@ namespace StudentFileRename.ViewModel
         {
             ConversionRequest.OutputDirectoryLocation = _fileDialogService.GetFilePathFromExplorer(true);
         }
+
         private bool _isProcessing;
 
         public bool IsProcessing
@@ -88,7 +96,12 @@ namespace StudentFileRename.ViewModel
                         var matches = Regex.Matches(text, pattern, RegexOptions.IgnoreCase);
                         if (matches.Count == 0)
                         {
-                            throw new ApplicationException($"No student id found for file {file}");
+                            text = TryParseImage(file);
+                            matches = Regex.Matches(text, pattern, RegexOptions.IgnoreCase);
+                            if (matches.Count == 0)
+                            {
+                                throw new ApplicationException($"No student id found for file {file}");
+                            }
                         }
 
                         if (matches.Count > 1)
@@ -105,14 +118,65 @@ namespace StudentFileRename.ViewModel
             }
             catch (Exception e)
             {
-                dialogModel = new InformationalDialogViewModel("Error", $"The following uncaught exception was encountered: {e}.");
+                dialogModel = new InformationalDialogViewModel("Error",
+                    $"The following uncaught exception was encountered: {e}.");
             }
             finally
             {
                 IsProcessing = false;
             }
+
             await _dialogService.ShowDialog(dialogModel);
-            
         }
+
+        private static string TryParseImage(string file)
+        {
+            var tempImage =
+                Environment.ExpandEnvironmentVariables($"%TEMP%\\{Path.GetFileNameWithoutExtension(file)}.png");
+            PdfToPng(
+                file,
+                tempImage
+            );
+
+            var text = ReadImage(tempImage);
+
+            File.Delete(tempImage);
+
+            return text;
+        }
+        private static void PdfToPng(string inputFile, string outputFileName)
+        {
+            var pageNumber = 1; // the pages in a PDF document
+            
+                        
+
+            using (var rasterizer = new GhostscriptRasterizer()) //create an instance for GhostscriptRasterizer
+            {
+                var fName = "gsdll64.dll";
+                if (IntPtr.Size == 4)
+                {
+                    fName = "gsdll32.dll";
+                }
+                rasterizer.Open(inputFile, new GhostscriptVersionInfo($"{BinDir}\\{fName}"), false); //opens the PDF file for rasterizing
+                
+
+                //converts the PDF pages to png's 
+                var pdf2PNG = rasterizer.GetPage(200, pageNumber);
+
+                //save the png's
+                pdf2PNG.Save(outputFileName, ImageFormat.Png);
+
+            }
+        }
+
+        private static string ReadImage(string imageName)
+        {
+            using var engine = new TesseractEngine($"{BinDir}\\tessdata", "eng", EngineMode.Default);
+            using var img = Pix.LoadFromFile(imageName);
+            using var page = engine.Process(img);
+            return page.GetText();
+        }
+
+        private static string BinDir => System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -79,6 +80,7 @@ namespace StudentFileRename.ViewModel
                 var newDirectory = ConversionRequest.OutputDirectoryLocation;
                 ConversionRequest.OriginalDirectoryLocation = null;
                 ConversionRequest.OutputDirectoryLocation = null;
+                var errors = new List<ConversionError>();
                 await Task.Run(() =>
                 {
                     var files = Directory.EnumerateFiles(origDirectory).ToArray();
@@ -88,33 +90,57 @@ namespace StudentFileRename.ViewModel
                             $"No files were found at {origDirectory}");
                     }
 
+
                     foreach (var file in files)
                     {
-                        using var pdf = PdfDocument.Open(file);
-                        var text = pdf.GetPage(1).Text;
-                        var pattern = @"Student Id: (\d+)";
-                        var matches = Regex.Matches(text, pattern, RegexOptions.IgnoreCase);
-                        if (matches.Count == 0)
+                        try
                         {
-                            text = TryParseImage(file);
-                            matches = Regex.Matches(text, pattern, RegexOptions.IgnoreCase);
+                            using var pdf = PdfDocument.Open(file);
+                            var text = pdf.GetPage(1).Text;
+                            var pattern = @"Student Id: (\d+)";
+                            var matches = Regex.Matches(text, pattern, RegexOptions.IgnoreCase);
                             if (matches.Count == 0)
                             {
-                                throw new ApplicationException($"No student id found for file {file}");
+                                text = TryParseImage(file);
+                                matches = Regex.Matches(text, pattern, RegexOptions.IgnoreCase);
+                                if (matches.Count == 0)
+                                {
+                                    throw new ApplicationException($"No student id found for file {file}");
+                                }
                             }
-                        }
 
-                        if (matches.Count > 1)
+                            if (matches.Count > 1)
+                            {
+                                throw new ApplicationException($"Multiple student id matches found for file {file}");
+                            }
+
+                            var studentId = matches[0].Groups[1];
+                            File.Copy(file, Path.Join(newDirectory, $"{studentId}.pdf"), true);
+                        }
+                        catch (Exception ex)
                         {
-                            throw new ApplicationException($"Multiple student id matches found for file {file}");
+                            errors.Add(new ConversionError()
+                            {
+                                Error = ex,
+                                FileName = new FileInfo(file).Name,
+                                FilePath = file
+                            });
                         }
-
-                        var studentId = matches[0].Groups[1];
-                        File.Copy(file, Path.Join(newDirectory, $"{studentId}.pdf"), true);
                     }
                 });
-                dialogModel = new InformationalDialogViewModel("Success",
-                    $"Files were exported to {newDirectory}");
+                if (errors.Any())
+                {
+                    var fileNames = string.Join(", ", errors.Select(e => e.FileName));
+                    var messages = string.Join("\n", errors.Select(e => $"{e.FilePath} - {e.Error.Message}"));
+                    dialogModel =
+                        new InformationalDialogViewModel("Error",
+                            $"Failed to process {errors.Count} file(s): {fileNames}\n\n{messages}");
+                }
+                else
+                {
+                    dialogModel = new InformationalDialogViewModel("Success",
+                        $"Files were exported to {newDirectory}");
+                }
             }
             catch (Exception e)
             {

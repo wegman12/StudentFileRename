@@ -33,9 +33,9 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Publish
-      run: dotnet publish -f net7.0-windows10.0.19041.0  -c Release /p:RuntimeIdentifierOverride=win10-x64 /p:GenerateAppxPackageOnBuild=true /p:AppxPackageSigningEnabled=true /p:PackageCertificateThumbprint="${{ secrets.WINDOWS_PFX_THUMBPRINT }}"
+      run: dotnet publish -f net7.0-windows10.0.19041.0  -c Release /p:RuntimeIdentifierOverride=win10-x64 /p:GenerateAppxPackageOnBuild=true /p:AppxPackageSigningEnabled=true /p:PackageCertificateThumbprint="${{ secrets.WINDOWS_PFX_THUMBPRINT }}" -o publish
     - name: Create Archive
-      run: powershell Compress-Archive -Path .StudentFileRename/publish/* -DestinationPath ./StudentFileRename.zip
+      run: powershell Compress-Archive -Path ./publish/* -DestinationPath ./StudentFileRename.zip
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.2
       with:

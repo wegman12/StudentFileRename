@@ -16,15 +16,20 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 7.0.x
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.1
+      with:
+        vs-prerelease: true
+    - name: Install MAUI Workloads
+      run: |
+        dotnet workload install maui --ignore-failed-sources
     - name: Restore dependencies
       run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true -o ./publish
+    - name: Publish
+      run: dotnet publish -f net7.0-windows10.0.19041.0  -c Release /p:RuntimeIdentifierOverride=win10-x64
     - name: Create Archive
-      run: powershell Compress-Archive -Path ./publish/* -DestinationPath ./StudentFileRename.zip
+      run: powershell Compress-Archive -Path .StudentFileRename/publish/* -DestinationPath ./StudentFileRename.zip
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.2
       with:

@@ -24,13 +24,14 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
-		<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
-		<AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+		<AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+		<AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
 		<GenerateTestArtifacts>True</GenerateTestArtifacts>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
-		<PackageCertificateThumbprint>D4BDCE06EBA86E5FF52579672D04142850A121A5</PackageCertificateThumbprint>
+		<PackageCertificateThumbprint>F5079F5DB93CADCBBE6F6120BD4AB72C931929FF</PackageCertificateThumbprint>
 		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+		<AppxPackageDir>D:\Repositories\Personal\StudentFileRename\StudentFileRename\publish\</AppxPackageDir>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -49,15 +50,6 @@
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <COMReference Include="{d37e2a3e-8545-3a39-9f4f-31827c9124ab}">
-	    <WrapperTool>tlbimp</WrapperTool>
-	    <VersionMinor>4</VersionMinor>
-	    <VersionMajor>2</VersionMajor>
-	    <Guid>d37e2a3e-8545-3a39-9f4f-31827c9124ab</Guid>
-	  </COMReference>
 	</ItemGroup>
 
 	<ItemGroup>

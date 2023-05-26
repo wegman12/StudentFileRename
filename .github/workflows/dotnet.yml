@@ -21,13 +21,19 @@ jobs:
       uses: microsoft/setup-msbuild@v1.1
       with:
         vs-prerelease: true
+    - name: Decrypt PFX File
+      run: |
+        echo "${{ secrets.WINDOWS_PFX_FILE }}" > cert.pfx.asc
+        certutil -decode cert.pfx.asc cert.pfx
+    - name: Add Cert to Store
+      run: certutil -user -q -p ${{ secrets.WINDOWS_PFX_PASSWORD }} -importpfx cert.pfx NoRoot
     - name: Install MAUI Workloads
       run: |
         dotnet workload install maui --ignore-failed-sources
     - name: Restore dependencies
       run: dotnet restore
     - name: Publish
-      run: dotnet publish -f net7.0-windows10.0.19041.0  -c Release /p:RuntimeIdentifierOverride=win10-x64
+      run: dotnet publish -f net7.0-windows10.0.19041.0  -c Release /p:RuntimeIdentifierOverride=win10-x64 /p:GenerateAppxPackageOnBuild=true /p:AppxPackageSigningEnabled=true /p:PackageCertificateThumbprint="${{ secrets.WINDOWS_PFX_THUMBPRINT }}"
     - name: Create Archive
       run: powershell Compress-Archive -Path .StudentFileRename/publish/* -DestinationPath ./StudentFileRename.zip
     - name: Upload a Build Artifact

@@ -1,29 +1,14 @@
-﻿<Application x:Class="StudentFileRename.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:StudentFileRename"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+             x:Class="StudentFileRename.App">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignTextBox}">
-                <Setter Property="Margin" Value="0,0,0,20" />
-            </Style>
-            <Style TargetType="{x:Type Button}" x:Key="BrowseButton" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-                <Setter Property="Height" Value="25" />
-                <Setter Property="Margin" Value="10, 0, 0, 0" />
-                <Setter Property="FontSize" Value="13" />
-            </Style>
-            <Style TargetType="TextBox" x:Key="FloatingLabelTextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
-                <Setter Property="Margin" Value="0,0,0,15" />
-            </Style>
-            <Style TargetType="Label" x:Key="FieldLabel" BasedOn="{StaticResource MaterialDesignLabel}">
-                <Setter Property="Margin" Value="0,0,10,0" />
-                <Setter Property="HorizontalAlignment" Value="Right" />
-            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

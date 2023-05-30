@@ -45,15 +45,23 @@ Console.WriteLine($"0 / {filesToConvert.Length}");
 //filesToConvert.AsParallel().ForAll(inputFile =>
 foreach (var inputFile in filesToConvert)
 {
-    var studentId = converter.GetNameOfFile(inputFile);
+    try
+    {
+        var studentId = converter.GetNameOfFile(inputFile);
 
-    var outputFile =
-        Path.Join(
-            Path.GetDirectoryName(
-                inputFile.Replace(inputConfiguration.InputFolderStructure, inputConfiguration.OutputFolderStructure)),
-            $"{studentId}.pdf"
-        );
+        var outputFile =
+            Path.Join(
+                Path.GetDirectoryName(
+                    inputFile.Replace(inputConfiguration.InputFolderStructure,
+                        inputConfiguration.OutputFolderStructure)),
+                $"{studentId}.pdf"
+            );
 
-    File.Copy(inputFile, outputFile, true);
-    Console.WriteLine($"{++currentFile} / {filesToConvert.Length}");
+        File.Copy(inputFile, outputFile, true);
+        Console.WriteLine($"{++currentFile} / {filesToConvert.Length}");
+    }
+    catch (Exception e)
+    {
+        Console.Error.WriteLine($"Failed to process file {inputFile}: ${e}");
+    }
 }

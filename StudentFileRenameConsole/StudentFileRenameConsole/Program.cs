@@ -57,6 +57,12 @@ foreach (var inputFile in filesToConvert)
                 $"{studentId}.pdf"
             );
 
+        var outputDirectory = Path.GetDirectoryName(outputFile);
+        if (!Directory.Exists(outputDirectory))
+        {
+            Directory.CreateDirectory(outputDirectory);
+        }
+
         File.Copy(inputFile, outputFile, true);
         Console.WriteLine($"{++currentFile} / {filesToConvert.Length}");
     }

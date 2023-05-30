@@ -191,7 +191,7 @@ public partial class MainPage : ContentPage, IDisposable
 
 
             //converts the PDF pages to png's 
-            var pdf2PNG = Rasterizer.GetPage(200, 200, pageNumber);
+            var pdf2PNG = Rasterizer.GetPage(800, 800, pageNumber);
 
             //save the png's
             pdf2PNG.Save(outputFileName, ImageFormat.Png);

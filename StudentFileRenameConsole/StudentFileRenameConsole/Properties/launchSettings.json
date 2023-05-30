@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "StudentFileRenameConsole": {
+      "commandName": "Project",
+      "commandLineArgs": "SampleInput.json",
+      "workingDirectory": "$(ProjectDir)"
+    }
+  }
+}
